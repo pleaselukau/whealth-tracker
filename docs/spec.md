@@ -136,5 +136,15 @@ Audit logs must not contain secrets (passwords, JWTs).
 
 \- `GET /health` → `{ "status": "ok" }`
 
+## Authentication Decisions (Locked for Phase 1)
+
+- Password hashing: `passlib[bcrypt]` (bcrypt)
+- JWT strategy (MVP): access tokens only
+- Access token expiration: 60 minutes
+- Refresh tokens: not in MVP (defer to Phase 2 if needed)
+- Secret handling:
+  - Local dev: `JWT_SECRET` via environment variables / `.env`
+  - Cloud: store in AWS Secrets Manager and inject into ECS task definition
+
 
 
