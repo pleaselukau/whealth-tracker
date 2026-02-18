@@ -13,8 +13,9 @@ services:
   api:
     build: ./backend
     environment:
-      DATABASE_URL: postgresql+psycopg://whealth:whealth@db:5432/whealth
-      JWT_SECRET: dev-secret-change-me
+      env_file:
+      - .env
+
     ports:
       - "8000:8000"
     depends_on:
