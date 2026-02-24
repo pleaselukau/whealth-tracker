@@ -1,5 +1,14 @@
-from pydantic import BaseModel
 import os
+from pydantic import BaseModel
+
+try:
+    from dotenv import load_dotenv
+    # Prefer host env when running tools like alembic on Windows/macOS
+    load_dotenv(".env.host")
+    # Then load default .env (Docker / general local)
+    load_dotenv()
+except Exception:
+    pass
 
 
 class Settings(BaseModel):
@@ -10,4 +19,3 @@ class Settings(BaseModel):
 
 
 settings = Settings()
-
