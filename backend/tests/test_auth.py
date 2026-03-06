@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -6,8 +8,10 @@ client = TestClient(app)
 
 
 def test_register_login_and_me():
+    unique_email = f"pytest_user_{uuid4()}@example.com"
+
     register_payload = {
-        "email": "pytest_user@example.com",
+        "email": unique_email,
         "password": "Password123",
     }
 
