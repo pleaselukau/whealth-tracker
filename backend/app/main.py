@@ -1,7 +1,8 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes import auth, insights, symptoms
 from app.core.logging import configure_logging
-from app.api.routes import auth, symptoms, insights
 
 configure_logging()
 
@@ -10,13 +11,22 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# Health stays simple
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
 
-# API routers (Phase 1)
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(symptoms.router, prefix="/symptoms", tags=["symptoms"])
 app.include_router(insights.router, prefix="/insights", tags=["insights"])
