@@ -11,6 +11,8 @@ dependencies = [
   "alembic==1.13.2",
   "python-jose==3.3.0",
   "passlib[bcrypt]==1.7.4",
+  "email-validator==2.2.0",
+  "argon2-cffi",
 ]
 
 [project.optional-dependencies]

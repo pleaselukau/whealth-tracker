@@ -4,8 +4,11 @@ WORKDIR /app
 
 # Install project
 COPY pyproject.toml setup.cfg /app/
+COPY alembic.ini /app/
+COPY alembic /app/alembic
 COPY app /app/app
-RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir .
+COPY tests /app/tests
 
-EXPOSE 8000
+RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir ".[dev]"
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
