@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, insights, symptoms
+from app.api.routes import auth, exports, insights, symptoms
 from app.core.logging import configure_logging
 
 configure_logging()
@@ -30,3 +30,4 @@ def health():
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(symptoms.router, prefix="/symptoms", tags=["symptoms"])
 app.include_router(insights.router, prefix="/insights", tags=["insights"])
+app.include_router(exports.router, prefix="/exports", tags=["exports"])
