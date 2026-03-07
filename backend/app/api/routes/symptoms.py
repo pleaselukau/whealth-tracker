@@ -63,6 +63,7 @@ def list_user_symptoms(
     from_: datetime | None = None,
     to: datetime | None = None,
     category: str | None = None,
+    severity: int | None = None,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
@@ -72,6 +73,7 @@ def list_user_symptoms(
         date_from=from_,
         date_to=to,
         category=category,
+        severity=severity,
     )
     return [to_response(symptom) for symptom in symptoms]
 

@@ -37,6 +37,7 @@ def list_symptoms(
     date_from: datetime | None = None,
     date_to: datetime | None = None,
     category: str | None = None,
+    severity: int | None = None,
 ) -> list[SymptomEntry]:
     query = select(SymptomEntry).where(SymptomEntry.user_id == user_id)
 
@@ -46,6 +47,8 @@ def list_symptoms(
         query = query.where(SymptomEntry.date_time <= date_to)
     if category is not None:
         query = query.where(SymptomEntry.category == category)
+    if severity is not None:
+        query = query.where(SymptomEntry.severity == severity)
 
     query = query.order_by(SymptomEntry.date_time.desc())
     return list(db.scalars(query).all())
