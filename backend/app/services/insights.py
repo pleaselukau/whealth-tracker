@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import Date, cast, distinct, func, select
 from sqlalchemy.orm import Session
@@ -57,10 +57,56 @@ def get_summary_insights(
         for row in db.execute(averages_query)
     ]
 
+    most_frequent_query = (
+        select(
+            SymptomEntry.category,
+            func.count().label("entry_count"),
+        )
+        .where(SymptomEntry.user_id == user_id)
+        .group_by(SymptomEntry.category)
+        .order_by(func.count().desc(), SymptomEntry.category.asc())
+    )
+
+    if date_from is not None:
+        most_frequent_query = most_frequent_query.where(SymptomEntry.date_time >= date_from)
+    if date_to is not None:
+        most_frequent_query = most_frequent_query.where(SymptomEntry.date_time <= date_to)
+
+    most_frequent_row = db.execute(most_frequent_query).first()
+    most_frequent_category = most_frequent_row.category if most_frequent_row else None
+
+    highest_avg_query = (
+        select(
+            SymptomEntry.category,
+            func.avg(SymptomEntry.severity).label("average_severity"),
+        )
+        .where(SymptomEntry.user_id == user_id)
+        .group_by(SymptomEntry.category)
+        .order_by(func.avg(SymptomEntry.severity).desc(), SymptomEntry.category.asc())
+    )
+
+    if date_from is not None:
+        highest_avg_query = highest_avg_query.where(SymptomEntry.date_time >= date_from)
+    if date_to is not None:
+        highest_avg_query = highest_avg_query.where(SymptomEntry.date_time <= date_to)
+
+    highest_avg_row = db.execute(highest_avg_query).first()
+    highest_avg_severity_category = highest_avg_row.category if highest_avg_row else None
+
+    seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    entries_last_7_days_query = select(func.count()).where(
+        SymptomEntry.user_id == user_id,
+        SymptomEntry.date_time >= seven_days_ago,
+    )
+    entries_last_7_days = db.scalar(entries_last_7_days_query) or 0
+
     return {
         "total_entries": total_entries,
         "days_tracked": days_tracked,
         "average_severity_per_category": averages,
+        "most_frequent_category": most_frequent_category,
+        "highest_avg_severity_category": highest_avg_severity_category,
+        "entries_last_7_days": entries_last_7_days,
     }
 
 
