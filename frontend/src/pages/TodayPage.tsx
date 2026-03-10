@@ -8,9 +8,9 @@ import { Card } from "../components/Card";
 
 const todaySelections = ["Cramps", "Fatigue", "Low energy"];
 const quickActions = [
-  { label: "Log symptoms", to: "/app/log" },
-  { label: "Open calendar", to: "/app/calendar" },
-  { label: "View insights", to: "/app/insights" },
+  { label: "Log symptoms", to: "/app/log", description: "Record how you feel today." },
+  { label: "Open calendar", to: "/app/calendar", description: "Look back at recent days." },
+  { label: "View insights", to: "/app/insights", description: "See your patterns and trends." },
 ];
 
 export function TodayPage() {
@@ -56,10 +56,11 @@ export function TodayPage() {
             }}
           >
             <p style={{ margin: 0, fontSize: "0.95rem", opacity: 0.95 }}>
-              Today’s check-in
+              Featured insight
             </p>
             <p style={{ margin: "0.4rem 0 0", fontSize: "1rem", lineHeight: 1.4 }}>
-              You haven’t logged today yet. Take a moment to record how you feel.
+              You logged 3 symptoms this week. Keep checking in so your patterns become
+              easier to understand over time.
             </p>
           </div>
         </div>
@@ -67,8 +68,8 @@ export function TodayPage() {
 
       <section>
         <SectionHeader
-          title="Quick actions"
-          subtitle="Jump into the part of the app you need most today."
+          title="Today’s check-in"
+          subtitle="Start with the action that feels most relevant right now."
         />
         <div
           style={{
@@ -83,7 +84,7 @@ export function TodayPage() {
                 <div>
                   <h3 style={{ marginBottom: "0.35rem" }}>{action.label}</h3>
                   <p style={{ margin: 0, color: "var(--color-text-muted)" }}>
-                    Open this section and continue your routine.
+                    {action.description}
                   </p>
                 </div>
 
@@ -111,39 +112,8 @@ export function TodayPage() {
 
       <section>
         <SectionHeader
-          title="Featured insight"
-          subtitle="A simple daily signal to make the experience feel alive."
-        />
-        <Card
-          style={{
-            background: "linear-gradient(135deg, rgba(139,92,246,0.12), rgba(251,207,232,0.25))",
-            border: "1px solid rgba(139,92,246,0.14)",
-          }}
-        >
-          <div style={{ display: "grid", gap: "0.5rem" }}>
-            <p
-              style={{
-                margin: 0,
-                color: "var(--color-text-muted)",
-                fontSize: "0.95rem",
-              }}
-            >
-              This week’s pattern
-            </p>
-            <h3 style={{ margin: 0, fontSize: "1.5rem" }}>
-              You logged 3 symptoms this week
-            </h3>
-            <p style={{ margin: 0, color: "var(--color-text-muted)" }}>
-              Keep checking in so your patterns become easier to spot over time.
-            </p>
-          </div>
-        </Card>
-      </section>
-
-      <section>
-        <SectionHeader
-          title="Today at a glance"
-          subtitle="Small pieces of context that make the home experience feel useful."
+          title="At a glance"
+          subtitle="Small daily signals that make the home experience feel useful."
         />
         <div
           style={{
@@ -161,7 +131,7 @@ export function TodayPage() {
       <section>
         <SectionHeader
           title="What are you feeling today?"
-          subtitle="Your recent selected states can live here as a soft summary."
+          subtitle="Your recent selected states can live here as a soft daily summary."
         />
         <Card>
           {todaySelections.length === 0 ? (

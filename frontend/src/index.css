@@ -130,3 +130,40 @@ p {
     padding: var(--space-4);
   }
 }
+/* ---------- Calendar styling fix ---------- */
+
+.react-calendar {
+  border: none;
+  background: white;
+  border-radius: 20px;
+  padding: 1rem;
+}
+
+.react-calendar__tile {
+  color: #2b2b2b;
+  border-radius: 14px;
+}
+
+.react-calendar__tile--now {
+  background: rgba(139, 92, 246, 0.2);
+  color: #111;
+}
+
+.react-calendar__tile--active {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #d946ef;
+}
+
+.react-calendar__navigation button {
+  color: #2b2b2b;
+  font-weight: 600;
+}
+
+.react-calendar__month-view__weekdays {
+  color: #555;
+  font-weight: 600;
+}

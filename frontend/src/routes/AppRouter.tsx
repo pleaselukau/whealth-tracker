@@ -25,6 +25,7 @@ export function AppRouter() {
             <Route path="calendar" element={<CalendarPage />} />
             <Route path="log" element={<LogPage />} />
             <Route path="insights" element={<InsightsPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
           </Route>
         </Route>
       </Routes>
