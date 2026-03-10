@@ -9,5 +9,5 @@ export function RedirectPage() {
     return <p>Loading...</p>;
   }
 
-  return <Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />;
+    return <Navigate to={isAuthenticated ? "/app/today" : "/login"} replace />;
 }

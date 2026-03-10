@@ -1,11 +1,14 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { RedirectPage } from "../pages/RedirectPage";
 import { LoginPage } from "../pages/LoginPage";
 import { RegisterPage } from "../pages/RegisterPage";
-import { DashboardPage } from "../pages/DashboardPage";
+import { TodayPage } from "../pages/TodayPage";
+import { CalendarPage } from "../pages/CalendarPage";
+import { LogPage } from "../pages/LogPage";
 import { InsightsPage } from "../pages/InsightsPage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { AppLayout } from "../layout/AppLayout";
 
 export function AppRouter() {
   return (
@@ -16,8 +19,13 @@ export function AppRouter() {
         <Route path="/register" element={<RegisterPage />} />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/insights" element={<InsightsPage />} />
+          <Route path="/app" element={<AppLayout />}>
+            <Route index element={<Navigate to="/app/today" replace />} />
+            <Route path="today" element={<TodayPage />} />
+            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="log" element={<LogPage />} />
+            <Route path="insights" element={<InsightsPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

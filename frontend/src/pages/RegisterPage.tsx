@@ -26,7 +26,7 @@ export function RegisterPage() {
 
     try {
       await register({ email, password });
-      navigate("/dashboard");
+      navigate("/app/today");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {
