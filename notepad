@@ -6,7 +6,7 @@ import { AppTopbar } from "./AppTopbar";
 export function AppLayout() {
   return (
     <div>
-      <div style={{ display: "flex" }}>
+      <div className="app-shell-desktop" style={{ display: "flex" }}>
         <div className="desktop-only">
           <AppSidebar />
         </div>
@@ -15,7 +15,6 @@ export function AppLayout() {
           <div className="mobile-only">
             <AppTopbar />
           </div>
-
           <div className="page-content">
             <Outlet />
           </div>
