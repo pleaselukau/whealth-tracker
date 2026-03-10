@@ -6,6 +6,7 @@ type ListSymptomsParams = {
   from_?: string;
   to?: string;
   category?: string;
+  severity?: number;
 };
 
 function buildSymptomsQuery(params: Omit<ListSymptomsParams, "token">): string {
@@ -20,11 +21,13 @@ function buildSymptomsQuery(params: Omit<ListSymptomsParams, "token">): string {
   if (params.category) {
     search.set("category", params.category);
   }
+  if (params.severity !== undefined) {
+    search.set("severity", String(params.severity));
+  }
 
   const query = search.toString();
   return query ? `?${query}` : "";
 }
-
 export function createSymptom(token: string, payload: CreateSymptomRequest): Promise<Symptom> {
   return apiRequest<Symptom>("/symptoms", {
     method: "POST",

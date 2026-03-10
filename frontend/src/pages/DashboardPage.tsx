@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { createSymptom, deleteSymptom, listSymptoms, updateSymptom } from "../api/symptoms";
+import {
+  createSymptom,
+  deleteSymptom,
+  listSymptoms,
+  updateSymptom,
+} from "../api/symptoms";
 import { useAuth } from "../context/AuthContext";
 import type { Symptom, SymptomCategory } from "../types/symptom";
 
@@ -51,6 +56,11 @@ export function DashboardPage() {
   const [notes, setNotes] = useState("");
   const [tags, setTags] = useState("");
 
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterSeverity, setFilterSeverity] = useState("");
+  const [filterFrom, setFilterFrom] = useState("");
+  const [filterTo, setFilterTo] = useState("");
+
   async function loadSymptoms() {
     if (!token) return;
 
@@ -58,7 +68,13 @@ export function DashboardPage() {
     setError("");
 
     try {
-      const data = await listSymptoms({ token });
+      const data = await listSymptoms({
+        token,
+        category: filterCategory || undefined,
+        severity: filterSeverity ? Number(filterSeverity) : undefined,
+        from_: filterFrom ? new Date(filterFrom).toISOString() : undefined,
+        to: filterTo ? new Date(filterTo).toISOString() : undefined,
+      });
       setSymptoms(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load symptoms");
@@ -69,7 +85,7 @@ export function DashboardPage() {
 
   useEffect(() => {
     void loadSymptoms();
-  }, [token]);
+  }, [token, filterCategory, filterSeverity, filterFrom, filterTo]);
 
   async function handleCreate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -89,7 +105,9 @@ export function DashboardPage() {
         category,
         severity,
         notes: notes || undefined,
-        tags: tags ? tags.split(",").map((tag) => tag.trim()).filter(Boolean) : undefined,
+        tags: tags
+          ? tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+          : undefined,
       });
 
       setDateTime("");
@@ -126,9 +144,7 @@ export function DashboardPage() {
   async function handleUpdate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!token || !editState) {
-      return;
-    }
+    if (!token || !editState) return;
 
     setIsUpdating(true);
     setError("");
@@ -218,7 +234,12 @@ export function DashboardPage() {
               value={dateTime}
               onChange={(event) => setDateTime(event.target.value)}
               required
-              style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
             />
           </label>
 
@@ -226,8 +247,15 @@ export function DashboardPage() {
             Category
             <select
               value={category}
-              onChange={(event) => setCategory(event.target.value as SymptomCategory)}
-              style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+              onChange={(event) =>
+                setCategory(event.target.value as SymptomCategory)
+              }
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
             >
               {categories.map((item) => (
                 <option key={item} value={item}>
@@ -246,7 +274,12 @@ export function DashboardPage() {
               value={severity}
               onChange={(event) => setSeverity(Number(event.target.value))}
               required
-              style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
             />
           </label>
 
@@ -256,7 +289,12 @@ export function DashboardPage() {
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               rows={3}
-              style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
             />
           </label>
 
@@ -267,7 +305,12 @@ export function DashboardPage() {
               value={tags}
               onChange={(event) => setTags(event.target.value)}
               placeholder="period day 2, workday"
-              style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
             />
           </label>
 
@@ -301,10 +344,17 @@ export function DashboardPage() {
                 type="datetime-local"
                 value={editState.date_time}
                 onChange={(event) =>
-                  setEditState((prev) => (prev ? { ...prev, date_time: event.target.value } : prev))
+                  setEditState((prev) =>
+                    prev ? { ...prev, date_time: event.target.value } : prev,
+                  )
                 }
                 required
-                style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginTop: "0.25rem",
+                  padding: "0.5rem",
+                }}
               />
             </label>
 
@@ -314,10 +364,20 @@ export function DashboardPage() {
                 value={editState.category}
                 onChange={(event) =>
                   setEditState((prev) =>
-                    prev ? { ...prev, category: event.target.value as SymptomCategory } : prev,
+                    prev
+                      ? {
+                          ...prev,
+                          category: event.target.value as SymptomCategory,
+                        }
+                      : prev,
                   )
                 }
-                style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginTop: "0.25rem",
+                  padding: "0.5rem",
+                }}
               >
                 {categories.map((item) => (
                   <option key={item} value={item}>
@@ -340,7 +400,12 @@ export function DashboardPage() {
                   )
                 }
                 required
-                style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginTop: "0.25rem",
+                  padding: "0.5rem",
+                }}
               />
             </label>
 
@@ -349,10 +414,17 @@ export function DashboardPage() {
               <textarea
                 value={editState.notes}
                 onChange={(event) =>
-                  setEditState((prev) => (prev ? { ...prev, notes: event.target.value } : prev))
+                  setEditState((prev) =>
+                    prev ? { ...prev, notes: event.target.value } : prev,
+                  )
                 }
                 rows={3}
-                style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginTop: "0.25rem",
+                  padding: "0.5rem",
+                }}
               />
             </label>
 
@@ -362,9 +434,16 @@ export function DashboardPage() {
                 type="text"
                 value={editState.tags}
                 onChange={(event) =>
-                  setEditState((prev) => (prev ? { ...prev, tags: event.target.value } : prev))
+                  setEditState((prev) =>
+                    prev ? { ...prev, tags: event.target.value } : prev,
+                  )
                 }
-                style={{ display: "block", width: "100%", marginTop: "0.25rem", padding: "0.5rem" }}
+                style={{
+                  display: "block",
+                  width: "100%",
+                  marginTop: "0.25rem",
+                  padding: "0.5rem",
+                }}
               />
             </label>
 
@@ -379,6 +458,107 @@ export function DashboardPage() {
           </form>
         </section>
       )}
+
+      <section style={{ marginBottom: "2rem" }}>
+        <h2>Filters</h2>
+
+        <div
+          style={{
+            display: "grid",
+            gap: "1rem",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            padding: "1rem",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+          }}
+        >
+          <label>
+            Category
+            <select
+              value={filterCategory}
+              onChange={(event) => setFilterCategory(event.target.value)}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
+            >
+              <option value="">All</option>
+              {categories.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Severity
+            <select
+              value={filterSeverity}
+              onChange={(event) => setFilterSeverity(event.target.value)}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
+            >
+              <option value="">All</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            From
+            <input
+              type="datetime-local"
+              value={filterFrom}
+              onChange={(event) => setFilterFrom(event.target.value)}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
+            />
+          </label>
+
+          <label>
+            To
+            <input
+              type="datetime-local"
+              value={filterTo}
+              onChange={(event) => setFilterTo(event.target.value)}
+              style={{
+                display: "block",
+                width: "100%",
+                marginTop: "0.25rem",
+                padding: "0.5rem",
+              }}
+            />
+          </label>
+
+          <div style={{ display: "flex", alignItems: "end" }}>
+            <button
+              type="button"
+              onClick={() => {
+                setFilterCategory("");
+                setFilterSeverity("");
+                setFilterFrom("");
+                setFilterTo("");
+              }}
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </section>
 
       <section>
         <h2>Your Symptoms</h2>
@@ -398,13 +578,24 @@ export function DashboardPage() {
                   padding: "1rem",
                 }}
               >
-                <p><strong>Category:</strong> {symptom.category}</p>
-                <p><strong>Severity:</strong> {symptom.severity}</p>
-                <p><strong>Date:</strong> {new Date(symptom.date_time).toLocaleString()}</p>
-                <p><strong>Notes:</strong> {symptom.notes || "—"}</p>
+                <p>
+                  <strong>Category:</strong> {symptom.category}
+                </p>
+                <p>
+                  <strong>Severity:</strong> {symptom.severity}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {new Date(symptom.date_time).toLocaleString()}
+                </p>
+                <p>
+                  <strong>Notes:</strong> {symptom.notes || "—"}
+                </p>
                 <p>
                   <strong>Tags:</strong>{" "}
-                  {symptom.tags && symptom.tags.length > 0 ? symptom.tags.join(", ") : "—"}
+                  {symptom.tags && symptom.tags.length > 0
+                    ? symptom.tags.join(", ")
+                    : "—"}
                 </p>
 
                 <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
