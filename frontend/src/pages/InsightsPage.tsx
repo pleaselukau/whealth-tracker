@@ -1,183 +1,132 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-import { getInsightsSummary, getInsightsTimeline } from "../api/insights";
-import { useAuth } from "../context/AuthContext";
-import type { InsightsSummary, TimelineResponse } from "../types/insight";
-import type { SymptomCategory } from "../types/symptom";
+import { Card } from "../components/Card";
+import { HeroBanner } from "../components/HeroBanner";
+import { SectionHeader } from "../components/SectionHeader";
+import { StatCard } from "../components/StatCard";
 
-const categories: SymptomCategory[] = [
-  "cramps",
-  "headache",
-  "mood",
-  "fatigue",
-  "sleep",
-  "bloating",
-  "nausea",
-  "other",
-];
+type Summary = {
+  total_entries: number;
+  days_tracked: number;
+  entries_last_7_days: number;
+  most_frequent_category: string;
+  highest_avg_severity_category: string;
+};
+
+type TrendPoint = {
+  date: string;
+  severity: number;
+};
 
 export function InsightsPage() {
-  const { token, user, logout } = useAuth();
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [trendData, setTrendData] = useState<TrendPoint[]>([]);
 
-  const [summary, setSummary] = useState<InsightsSummary | null>(null);
-  const [timeline, setTimeline] = useState<TimelineResponse | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<SymptomCategory>("cramps");
-  const [isLoadingSummary, setIsLoadingSummary] = useState(true);
-  const [isLoadingTimeline, setIsLoadingTimeline] = useState(true);
-  const [error, setError] = useState("");
+  async function loadSummary() {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch("http://localhost:8000/insights/summary", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    setSummary(data);
+  }
+
+  // temporary demo data for chart
+  function loadDemoTrend() {
+    setTrendData([
+      { date: "Mar 5", severity: 7 },
+      { date: "Mar 6", severity: 5 },
+      { date: "Mar 7", severity: 5 },
+      { date: "Mar 10", severity: 7 },
+      { date: "Mar 11", severity: 5 },
+      { date: "Mar 12", severity: 9 },
+    ]);
+  }
 
   useEffect(() => {
-    async function loadSummary() {
-      if (!token) return;
-
-      setIsLoadingSummary(true);
-      setError("");
-
-      try {
-        const data = await getInsightsSummary({ token });
-        setSummary(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load summary insights");
-      } finally {
-        setIsLoadingSummary(false);
-      }
-    }
-
-    void loadSummary();
-  }, [token]);
-
-  useEffect(() => {
-    async function loadTimeline() {
-      if (!token) return;
-
-      setIsLoadingTimeline(true);
-      setError("");
-
-      try {
-        const data = await getInsightsTimeline({
-          token,
-          category: selectedCategory,
-        });
-        setTimeline(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load timeline insights");
-      } finally {
-        setIsLoadingTimeline(false);
-      }
-    }
-
-    void loadTimeline();
-  }, [token, selectedCategory]);
+    loadSummary();
+    loadDemoTrend();
+  }, []);
 
   return (
-    <div style={{ maxWidth: 900, margin: "2rem auto", padding: "1rem" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2rem",
-          gap: "1rem",
-        }}
+    <div style={{ display: "grid", gap: "1.5rem" }}>
+      <HeroBanner
+        title="Your health insights"
+        subtitle="Over time, patterns begin to emerge. These summaries help you understand your body better."
       >
-        <div>
-          <h1>Insights</h1>
-          <p>View summary trends for{user ? ` ${user.email}` : " your account"}.</p>
+        <div
+          style={{
+            padding: "0.8rem 1rem",
+            borderRadius: "999px",
+            background: "rgba(255,255,255,0.2)",
+            fontWeight: 600,
+          }}
+        >
+          Trends and patterns from your logs
         </div>
+      </HeroBanner>
 
-        <div style={{ display: "flex", gap: "0.75rem" }}>
-          <Link to="/dashboard">Back to Dashboard</Link>
-          <button onClick={logout}>Logout</button>
-        </div>
-      </div>
+      {summary && (
+        <section>
+          <SectionHeader
+            title="At a glance"
+            subtitle="Key signals extracted from your recent check-ins."
+          />
 
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      <section style={{ marginBottom: "2rem" }}>
-        <h2>Summary</h2>
-
-        {isLoadingSummary ? (
-          <p>Loading summary...</p>
-        ) : !summary ? (
-          <p>No summary data available.</p>
-        ) : (
-          <>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                gap: "1rem",
-                marginBottom: "1.5rem",
-              }}
-            >
-              <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-                <h3>Total Entries</h3>
-                <p style={{ fontSize: "1.5rem", margin: 0 }}>{summary.total_entries}</p>
-              </div>
-
-              <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-                <h3>Days Tracked</h3>
-                <p style={{ fontSize: "1.5rem", margin: 0 }}>{summary.days_tracked}</p>
-              </div>
-            </div>
-
-            <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-              <h3>Average Severity by Category</h3>
-
-              {summary.average_severity_per_category.length === 0 ? (
-                <p>No category insight data yet.</p>
-              ) : (
-                <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
-                  {summary.average_severity_per_category.map((item) => (
-                    <li key={item.category}>
-                      <strong>{item.category}</strong>: {item.average_severity.toFixed(1)}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </>
-        )}
-      </section>
-
-      <section>
-        <h2>Timeline</h2>
-
-        <div style={{ marginBottom: "1rem" }}>
-          <label>
-            Category
-            <select
-              value={selectedCategory}
-              onChange={(event) => setSelectedCategory(event.target.value as SymptomCategory)}
-              style={{ display: "block", marginTop: "0.25rem", padding: "0.5rem", minWidth: "220px" }}
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-
-        {isLoadingTimeline ? (
-          <p>Loading timeline...</p>
-        ) : !timeline || timeline.points.length === 0 ? (
-          <p>No timeline data for this category yet.</p>
-        ) : (
-          <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "1rem" }}>
-            <h3>{timeline.category} timeline</h3>
-            <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
-              {timeline.points.map((point) => (
-                <li key={point.date}>
-                  <strong>{point.date}</strong>: {point.average_severity.toFixed(1)}
-                </li>
-              ))}
-            </ul>
+          <div
+            style={{
+              display: "grid",
+              gap: "1rem",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            }}
+          >
+            <StatCard label="Entries last 7 days" value={summary.entries_last_7_days} />
+            <StatCard label="Most frequent category" value={summary.most_frequent_category} />
+            <StatCard
+              label="Highest severity category"
+              value={summary.highest_avg_severity_category}
+            />
+            <StatCard label="Total entries" value={summary.total_entries} />
           </div>
-        )}
-      </section>
+        </section>
+      )}
+
+      <Card>
+        <SectionHeader
+          title="Symptom trend"
+          subtitle="A simple view of how severity has evolved across recent logs."
+        />
+
+        <div style={{ width: "100%", height: 300 }}>
+          <ResponsiveContainer>
+            <LineChart data={trendData}>
+              <XAxis dataKey="date" />
+              <YAxis domain={[0, 10]} />
+              <Tooltip />
+
+              <Line
+                type="monotone"
+                dataKey="severity"
+                stroke="#8b5cf6"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
     </div>
   );
 }
