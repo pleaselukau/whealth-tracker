@@ -3,11 +3,10 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install project
-COPY pyproject.toml setup.cfg /app/
-COPY alembic.ini /app/
-COPY alembic /app/alembic
-COPY app /app/app
-COPY tests /app/tests
+COPY backend/alembic.ini /app/
+COPY backend/alembic /app/alembic
+COPY backend/app /app/app
+COPY backend/tests /app/tests
 
 RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir ".[dev]"
 
