@@ -9,6 +9,5 @@ RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requireme
 COPY alembic.ini /app/
 COPY alembic /app/alembic
 COPY app /app/app
-COPY tests /app/tests
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
