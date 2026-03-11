@@ -2,16 +2,13 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# install build tools required for some python packages
-RUN apt-get update && apt-get install -y build-essential
+COPY backend/pyproject.toml /app/
 
-# copy dependency file
-COPY pyproject.toml .
+RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requirements.txt
 
-# install dependencies
-RUN pip install --no-cache-dir .
-
-# copy backend code (since Dockerfile already inside backend)
-COPY . .
+COPY backend/alembic.ini /app/
+COPY backend/alembic /app/alembic
+COPY backend/app /app/app
+COPY backend/tests /app/tests
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
