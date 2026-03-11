@@ -13,26 +13,6 @@ This repository demonstrates full-stack engineering, including:
 * containerized infrastructure
 
 ## Features
-### Daily Health Logging
-
-![Logging/Check-in page](docs/screenshots/log-1.png)
-![Logging/Check-in page](docs/screenshots/log-2.png)
-![Logging/Check-in page](docs/screenshots/log-3.png)
-![Logging/Check-in page](docs/screenshots/log-4.png)
-
-Users can log how they feel using a structured daily check-in experience.
-The logging interface organizes health events into categories such as:
-
-* Mood
-* Symptoms
-* Digestion
-* Vaginal discharge
-* Sex and sex drive
-* Contraception and pills
-* Pregnancy / ovulation tests
-* Lifestyle factors
-
-Users select items using interactive chips that create structured symptom entries.
 
 ### Today Page
 ![Today Page/Dashboard](docs/screenshots/today.png)
@@ -74,6 +54,28 @@ It currently includes:
 * severity trend chart
 
 The visualization layer uses Recharts to display time-based trends.
+
+### Daily Health Logging
+
+![Logging/Check-in page](docs/screenshots/log-1.png)
+![Logging/Check-in page](docs/screenshots/log-2.png)
+![Logging/Check-in page](docs/screenshots/log-3.png)
+![Logging/Check-in page](docs/screenshots/log-4.png)
+
+Users can log how they feel using a structured daily check-in experience.
+The logging interface organizes health events into categories such as:
+
+* Mood
+* Symptoms
+* Digestion
+* Vaginal discharge
+* Sex and sex drive
+* Contraception and pills
+* Pregnancy / ovulation tests
+* Lifestyle factors
+
+Users select items using interactive chips that create structured symptom entries.
+
 
 ## Architecture
 
