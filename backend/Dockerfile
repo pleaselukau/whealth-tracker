@@ -11,7 +11,7 @@ COPY pyproject.toml .
 # install dependencies
 RUN pip install --no-cache-dir .
 
-# copy backend code
-COPY backend ./backend
+# copy backend code (since Dockerfile already inside backend)
+COPY . .
 
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
