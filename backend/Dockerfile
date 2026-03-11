@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY backend/pyproject.toml /app/
 
-RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir .
 
 COPY backend/alembic.ini /app/
 COPY backend/alembic /app/alembic
