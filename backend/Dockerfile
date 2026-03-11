@@ -2,13 +2,16 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY requirements.txt /app/
+# install build tools required for some python packages
+RUN apt-get update && apt-get install -y build-essential
 
-RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requirements.txt
+# copy dependency file
+COPY pyproject.toml .
 
-COPY backend/app /app/app
-COPY backend/alembic /app/alembic
-COPY backend/alembic.ini /app/
-COPY backend/tests /app/tests
+# install dependencies
+RUN pip install --no-cache-dir .
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# copy backend code
+COPY backend ./backend
+
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
