@@ -1,273 +1,290 @@
-# Women’s Health Symptom Tracker (Cloud-Native, HIPAA-Aware)
+# Women’s Health Symptom Tracker
 
-A cloud-native (AWS-first) symptom logging system focused on women’s health.
-Users can log daily symptoms and later view summaries and export doctor-friendly reports.
+A modern women’s health tracking web application designed to help users log symptoms, understand patterns in their health data, and visualize trends over time.
 
-The project is designed with cloud infrastructure, security awareness, and extensibility in mind, even during local development.
+The project evolved from a backend prototype into a product-oriented MVP with a redesigned frontend inspired by consumer health applications such as Flo.
 
-## Project Status
+This repository demonstrates full-stack engineering, including:
 
-Phase 1: Backend MVP — Completed
+* API design
+* database modeling
+* frontend product UX
+* data visualization
+* containerized infrastructure
 
-The backend currently supports:
+## Features
+### Daily Health Logging
 
-user registration and authentication
+![Logging/Check-in page](docs/screenshots/log-1.png)
+![Logging/Check-in page](docs/screenshots/log-2.png)
+![Logging/Check-in page](docs/screenshots/log-3.png)
+![Logging/Check-in page](docs/screenshots/log-4.png)
 
-protected symptom logging
+Users can log how they feel using a structured daily check-in experience.
+The logging interface organizes health events into categories such as:
 
-symptom CRUD operations
+* Mood
+* Symptoms
+* Digestion
+* Vaginal discharge
+* Sex and sex drive
+* Contraception and pills
+* Pregnancy / ovulation tests
+* Lifestyle factors
 
-insight summaries and timelines
+Users select items using interactive chips that create structured symptom entries.
 
-audit logging
+### Today Page
+![Today Page/Dashboard](docs/screenshots/today.png)
 
-reproducible database migrations
+The Today page serves as the main daily home screen and includes:
 
-Docker-based local development
+* cycle context placeholder
+* quick actions
+* weekly activity summary
+* selected symptom overview
 
-automated tests
+This page was designed to feel personal, calm, and product-oriented, rather than like a traditional admin dashboard.
 
-Frontend development and cloud deployment will follow in later phases.
+### Calendar / Cycle View
 
-## Repo Structure
+![Calendar Page](docs/screenshots/calendar.png)
 
-The backend uses a backend/app/ layout rather than a src/ layout.
+The Calendar page provides a month-based history view of logged health events.
 
-This structure integrates cleanly with:
+Users can:
 
-FastAPI imports
+* navigate months
+* select specific days
+* view entries for the selected date
 
-Alembic migrations
+The goal is to give users a cycle-centered view of their health history.
 
-Docker container builds
+### Health Insights
+![Insights Page](docs/screenshots/insights.png)
 
-pytest test discovery
+The Insights page visualizes patterns extracted from logged health data.
 
-Current project structure:
+It currently includes:
 
-```bash
-backend/
+* entries in the last 7 days
+* most frequent category
+* highest severity category
+* total entries tracked
+* severity trend chart
+
+The visualization layer uses Recharts to display time-based trends.
+
+## Architecture
+
+The application follows a full-stack web architecture.
+
+```
+React (Frontend)
+       │
+       │ REST API
+       ▼
+FastAPI (Backend)
+       │
+       │ ORM
+       ▼
+PostgreSQL Database
+```
+The project is fully containerized using Docker.
+
+## Tech Stack
+### Frontend
+
+* React
+* TypeScript
+* Vite
+* Recharts
+* React Calendar
+
+### Backend
+
+* FastAPI
+* SQLAlchemy
+* Pydantic
+* JWT authentication
+
+### Database
+
+PostgreSQL
+
+### Infrastructure
+
+* Docker
+* Docker Compose
+
+Future infrastructure phases are planned for:
+
+* AWS ECS
+* Terraform
+* CI/CD pipelines
+
+## Backend API
+
+Key API endpoints include:
+
+### Authentication
+```
+POST /auth/register
+POST /auth/login
+```
+
+### Symptom Logging
+```
+POST /symptoms
+GET /symptoms
+GET /symptoms?category=...
+GET /symptoms?severity=...
+```
+
+### Insights
+```
+GET /insights/summary
+```
+
+Returns:
+
+* total entries
+* days tracked
+* entries last 7 days
+* most frequent category
+* highest severity category
+
+### Data Export
+```
+GET /symptoms/export
+```
+
+Exports user symptom logs as a CSV file.
+
+## Running the Project Locally
+### 1. Clone the repository
+```
+git clone https://github.com/your-username/whealth-tracker.git
+cd whealth-tracker
+```
+
+### 2. Start backend services
+```
+docker compose up -d
+```
+
+This starts:
+* FastAPI server
+* PostgreSQL database
+
+### 3. Verify backend health
+
+```
+curl http://localhost:8000/health
+```
+Expected response:
+```
+{"status":"ok"}
+```
+### 4. Start the frontend
+```
+cd frontend
+npm install
+npm run dev
+```
+The application will be available at:
+
+```
+http://localhost:5174
+```
+
+## Database Model (Simplified)
+
+The core data model stores symptom entries as structured records.
+
+Example entry:
+```
+date_time: 2026-03-12T10:00:00Z
+category: symptoms
+severity: 9
+notes: Strong pain
+tags: ["cramps"]
+```
+
+Each log is stored with:
+
+* timestamp
+* category group
+* severity
+* tags
+* notes
+
+This design supports flexible health event tracking.
+
+### Project Structure
+
+```
+whealth-tracker
 │
-├── app/
-│   ├── api/
-│   │   ├── deps.py
-│   │   └── routes/
-│   │       ├── auth.py
-│   │       ├── insights.py
-│   │       └── symptoms.py
-│   │
-│   ├── core/
-│   │   ├── config.py
-│   │   ├── logging.py
-│   │   └── security.py
-│   │
-│   ├── db/
-│   │   ├── base.py
-│   │   └── session.py
-│   │
-│   ├── models/
-│   │   ├── audit_log.py
-│   │   ├── export.py
-│   │   ├── symptom_entry.py
-│   │   └── user.py
-│   │
-│   ├── schemas/
-│   │   ├── insight.py
-│   │   ├── symptom.py
-│   │   └── user.py
-│   │
-│   ├── services/
-│   │   ├── insights.py
-│   │   ├── symptoms.py
-│   │   └── users.py
+├── backend
+│   ├── app
+│   │   ├── api
+│   │   ├── models
+│   │   ├── schemas
+│   │   └── services
 │   │
 │   └── main.py
 │
-├── tests/
-│   ├── test_auth.py
-│   ├── test_health.py
-│   ├── test_insights.py
-│   └── test_symptoms.py
+├── frontend
+│   ├── src
+│   │   ├── components
+│   │   ├── layout
+│   │   ├── pages
+│   │   ├── routes
+│   │   └── styles
 │
-├── alembic/
-├── Dockerfile
-├── alembic.ini
-└── pyproject.toml
-```
-If the backend grows significantly later, migrating to a src/ layout may still be considered, but it is not required for the current scale of the project.
-
-## Local Development
-### Prerequisites
-
-* Docker Desktop
-* Git
-
-### Run the stack
-
-From the repository root:
-
-```bash
-docker compose up --build
-```
-This starts:
-
-* FastAPI API server on http://localhost:8000
-* Postgres 16 database in a Docker container
-
-### Apply database migrations
-
-Once the containers are running:
-
-```bash
-docker compose exec api alembic upgrade head
+├── docs
+│   └── screenshots
+│
+└── docker-compose.yml
 ```
 
-This creates the database schema using Alembic migrations.
+## Product Vision
 
-### Run tests
-```bash
-docker compose exec api pytest
-```
+The long-term goal of the project is to evolve into a personal women health companion that helps users understand patterns in their bodies.
 
-Tests currently cover:
+Future capabilities may include:
 
-* health endpoint
-* authentication flow
-* symptom CRUD
-* insights calculations
+* cycle prediction
+* advanced symptom correlations
+* machine learning insights
+* doctor-friendly health reports
+* personalized recommendations
 
-### Health check
-```bash
-curl http://localhost:8000/health
-```
+## Future Work
 
-Expected response:
+Planned improvements include:
 
-```bash
-{"status":"ok"}
-```
+### Product
 
-## Local Architecture
+* richer cycle tracking
+* pregnancy test tracking
+* contraception tracking
+* symptom severity visualization
 
-Local development stack:
-```bash
-User (browser / curl)
-        ↓
-FastAPI API (Docker container, port 8000)
-        ↓
-Postgres 16 (Docker container, named volume: pgdata)
-```
+### Infrastructure
 
-Key components:
+* production deployment
+* AWS ECS container orchestration
+* Terraform infrastructure
+* CI/CD pipelines
 
-* FastAPI handles API routing, validation, and authentication
-* PostgreSQL stores users, symptom entries, audit logs, and export metadata
-* Alembic manages database schema migrations
-* Docker Compose orchestrates the API and database containers
+### Data Intelligence
 
-Environment variables configure secrets such as:
+* machine learning for symptom patterns
+* personalized health insights
+* anomaly detection
 
-+ DATABASE_URL
-+ JWT_SECRET
-
-Logs currently output to container stdout.
-
-## Backend Features (so far)
-### Authentication
-
-Endpoints:
-
-```bash
-POST /auth/register
-POST /auth/login
-GET  /auth/me
-```
-
-Authentication uses JWT access tokens.
-
-Passwords are securely hashed using bcrypt via passlib.
-
-### Symptom Tracking
-
-Users can create and manage symptom entries.
-
-#### Endpoints:
-
-```bash
-POST   /symptoms
-GET    /symptoms
-GET    /symptoms/{id}
-PUT    /symptoms/{id}
-DELETE /symptoms/{id}
-```
-Each entry records:
-
-* timestamp
-* symptom category
-* severity (1–10)
-* optional notes
-* optional tags
-
-All symptom records are user-scoped and protected by authentication.
-
-### Insights
-
-Basic analytics endpoints are available:
-
-```bash
-GET /insights/summary
-GET /insights/timeline?category=...
-```
-Summary provides:
-
-* total entries
-* number of days tracked
-* average severity per category
-
-Timeline provides:
-* daily average severity for a specific category
-
-These calculations are performed directly in SQL using aggregation queries.
-
-### Audit Logging
-
-Key user actions are recorded in an audit_logs table.
-
-Examples of recorded events:
-
-* user login
-* symptom creation
-* symptom update
-* symptom deletion
-
-Audit metadata is stored as JSON.
-
-Sensitive data such as passwords or tokens are never logged.
-
-## Documentation
-
-Additional documentation is available in the docs/ folder.
-
-* MVP specification: docs/spec.md
-* Database schema: docs/schema.md
-
-## Current Limitations
-
-The project currently focuses on the backend MVP only.
-
-Not yet implemented:
-
-* frontend user interface
-
-* cloud deployment (AWS ECS / RDS / S3)
-
-* export generation (CSV / PDF)
-
-* refresh tokens for authentication
-
-* CI/CD pipeline
-
-* production observability stack
 
 ## Compliance Note
 
@@ -284,5 +301,5 @@ Compliance requires additional controls including:
 * formal policies
 * production security reviews
 
-These concerns will be addressed in later phases.
+These concerns may be addressed in later phases.
 
