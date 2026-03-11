@@ -2,14 +2,13 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY backend/requirements.txt /app/
+COPY requirements.txt /app/
 
-# Install project
-COPY backend/alembic.ini /app/
-COPY backend/alembic /app/alembic
-COPY backend/app /app/app
-COPY backend/tests /app/tests
+RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r requirements.txt
 
-RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir -r backend/requirements.txt
+COPY alembic.ini /app/
+COPY alembic /app/alembic
+COPY app /app/app
+COPY tests /app/tests
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
