@@ -2,13 +2,12 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY backend/pyproject.toml /app/
+COPY pyproject.toml .
 
-RUN pip install --no-cache-dir -U pip && pip install --no-cache-dir .
+RUN pip install --no-cache-dir -U pip
 
-COPY backend/alembic.ini /app/
-COPY backend/alembic /app/alembic
-COPY backend/app /app/app
-COPY backend/tests /app/tests
+COPY . .
+
+RUN pip install --no-cache-dir .
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
