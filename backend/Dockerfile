@@ -2,11 +2,13 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY pyproject.toml .
+# copy dependency files first (better Docker cache)
+COPY backend/pyproject.toml /app/
 
 RUN pip install --no-cache-dir -U pip
 
-COPY . .
+# copy full project
+COPY backend /app
 
 RUN pip install --no-cache-dir .
 
