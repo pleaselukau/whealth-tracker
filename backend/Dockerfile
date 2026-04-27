@@ -8,7 +8,7 @@ COPY backend/pyproject.toml /app/
 RUN pip install --no-cache-dir -U pip
 
 # copy full project
-COPY backend /app
+COPY  backend /app
 
 RUN pip install --no-cache-dir .
 

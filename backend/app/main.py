@@ -4,6 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import auth, exports, insights, symptoms
 from app.core.logging import configure_logging
 
+origins = [
+    "http://localhost:5173",
+    "https://whealth-tracker.vercel.app",
+    "https://whealth-tracker-git-main-pleaselukau.vercel.app",
+]
+
 configure_logging()
 
 app = FastAPI(
@@ -13,9 +19,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-    ],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
